@@ -1,5 +1,5 @@
 {
-	"name": "EventEmitter",
+	"name": "events",
 	"repo": "Wizcorp/events",
 	"version": "0.1.0",
 	"scripts": [
