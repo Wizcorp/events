@@ -1,0 +1,9 @@
+{
+	"name": "EventEmitter",
+	"repo": "Wizcorp/events",
+	"version": "0.1.0",
+	"scripts": [
+		"index.js"
+	],
+	"license": "MIT"
+}
