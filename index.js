@@ -28,7 +28,11 @@ EventEmitter.prototype.on = function (evt, fn) {
 EventEmitter.prototype.add = EventEmitter.prototype.on;
 
 EventEmitter.prototype.once = function (evt, fn) {
-	fn.once = 1 + (fn.once >>> 0);
+	if (!fn.once) {
+		fn.once = 1;
+	} else {
+		fn.once += 1;
+	}
 
 	this.on(evt, fn);
 };
@@ -83,6 +87,7 @@ EventEmitter.prototype.listeners = function (evt) {
 };
 
 
+var slice = Array.prototype.slice;
 EventEmitter.prototype.emit = function (evt) {
 
 	var handlers = this.eventHandlers[evt];
@@ -93,8 +98,7 @@ EventEmitter.prototype.emit = function (evt) {
 	// copy handlers into a new array, so that handler removal doesn't affect array length
 	handlers = handlers.slice();
 
-	var args = Array.apply(null, arguments);
-	args.shift();
+	var args = slice.call(arguments, 1);
 
 	for (var i = 0, len = handlers.length; i < len; i++) {
 		var handler = handlers[i];
@@ -102,7 +106,7 @@ EventEmitter.prototype.emit = function (evt) {
 			continue;
 		}
 
-		var result = handler.apply(this, args);
+		handler.apply(this, args);
 
 		if (handler.once) {
 			if (handler.once > 1) {
@@ -112,11 +116,6 @@ EventEmitter.prototype.emit = function (evt) {
 			}
 
 			this.removeListener(evt, handler);
-		}
-
-		if (result === false) {
-			// cancelBubble
-			break;
 		}
 	}
 };
