@@ -23,6 +23,8 @@ EventEmitter.prototype.on = function (evt, fn) {
 	}
 
 	evtHandlers.push(fn);
+
+	return fn;
 };
 
 EventEmitter.prototype.add = EventEmitter.prototype.on;
@@ -34,7 +36,7 @@ EventEmitter.prototype.once = function (evt, fn) {
 		fn.once += 1;
 	}
 
-	this.on(evt, fn);
+	return this.on(evt, fn);
 };
 
 
