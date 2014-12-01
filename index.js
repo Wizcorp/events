@@ -1,15 +1,19 @@
 
-
 var EventEmitter = function () {
 	this.eventHandlers = {};
 };
 EventEmitter.EventEmitter = EventEmitter;
 module.exports = EventEmitter;
 
+EventEmitter.listenerCount = function (emitter, evt) {
+	var eventHandlers = emitter.eventHandlers[evt];
+	return eventHandlers ? eventHandlers.length : 0;
+};
+
 EventEmitter.prototype.on = function (evt, fn) {
 	if (typeof fn !== 'function') {
 		console.warn('Tried to register non-function', fn, 'as event handler for event:', evt);
-		return;
+		return this;
 	}
 
 	this.emit('newListener', evt, fn);
@@ -19,13 +23,14 @@ EventEmitter.prototype.on = function (evt, fn) {
 	if (evtHandlers === undefined) {
 		// first event handler for this event type
 		allHandlers[evt] = [fn];
-		return;
+		return this;
 	}
 
 	evtHandlers.push(fn);
+	return this;
 };
 
-EventEmitter.prototype.add = EventEmitter.prototype.on;
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
 EventEmitter.prototype.once = function (evt, fn) {
 	if (!fn.once) {
@@ -34,9 +39,12 @@ EventEmitter.prototype.once = function (evt, fn) {
 		fn.once += 1;
 	}
 
-	this.on(evt, fn);
+	return this.on(evt, fn);
 };
 
+EventEmitter.prototype.setMaxListeners = function () {
+	console.warn('Method setMaxListeners not supported, there is no limit to the number of listeners');
+};
 
 EventEmitter.prototype.removeListener = function (evt, handler) {
 	// like node.js, we only remove a single listener at a time, even if it occurs multiple times
@@ -52,8 +60,8 @@ EventEmitter.prototype.removeListener = function (evt, handler) {
 			}
 		}
 	}
+	return this;
 };
-
 
 EventEmitter.prototype.removeAllListeners = function (evt) {
 	if (evt) {
@@ -61,13 +69,12 @@ EventEmitter.prototype.removeAllListeners = function (evt) {
 	} else {
 		this.eventHandlers = {};
 	}
+	return this;
 };
-
 
 EventEmitter.prototype.hasListeners = function (evt) {
 	return (this.eventHandlers[evt] !== undefined);
 };
-
 
 EventEmitter.prototype.listeners = function (evt) {
 	var handlers = this.eventHandlers[evt];
@@ -86,7 +93,6 @@ EventEmitter.prototype.listeners = function (evt) {
 	return [];
 };
 
-
 var slice = Array.prototype.slice;
 EventEmitter.prototype.emit = function (evt) {
 
@@ -98,8 +104,8 @@ EventEmitter.prototype.emit = function (evt) {
 	// copy handlers into a new array, so that handler removal doesn't affect array length
 	handlers = handlers.slice();
 
+	var hadListener = false;
 	var args = slice.call(arguments, 1);
-
 	for (var i = 0, len = handlers.length; i < len; i++) {
 		var handler = handlers[i];
 		if (handler === undefined) {
@@ -107,6 +113,7 @@ EventEmitter.prototype.emit = function (evt) {
 		}
 
 		handler.apply(this, args);
+		hadListener = true;
 
 		if (handler.once) {
 			if (handler.once > 1) {
@@ -118,4 +125,6 @@ EventEmitter.prototype.emit = function (evt) {
 			this.removeListener(evt, handler);
 		}
 	}
+
+	return hadListener;
 };
