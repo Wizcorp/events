@@ -79,15 +79,7 @@ EventEmitter.prototype.hasListeners = function (evt) {
 EventEmitter.prototype.listeners = function (evt) {
 	var handlers = this.eventHandlers[evt];
 	if (handlers !== undefined) {
-		var len = handlers.length;
-
-		var fns = new Array(len);
-
-		for (var i = 0; i < len; i++) {
-			fns[i] = handlers[i];
-		}
-
-		return fns;
+		return handlers.slice();
 	}
 
 	return [];
@@ -98,7 +90,7 @@ EventEmitter.prototype.emit = function (evt) {
 
 	var handlers = this.eventHandlers[evt];
 	if (handlers === undefined) {
-		return;
+		return false;
 	}
 
 	// copy handlers into a new array, so that handler removal doesn't affect array length
