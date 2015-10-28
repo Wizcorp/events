@@ -1,0 +1,25 @@
+{
+  "name": "events.js",
+  "version": "0.1.4",
+  "description": "Event Emitter component, compatible with nodejs Event Emitter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wizcorp/events.git"
+  },
+  "keywords": [
+    "listeners",
+    "eventDispatcher",
+    "eventEmitter",
+    "events"
+  ],
+  "author": "Wizcorp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wizcorp/events/issues"
+  },
+  "homepage": "https://github.com/wizcorp/events#readme"
+}
