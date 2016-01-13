@@ -13,8 +13,7 @@ EventEmitter.listenerCount = function (emitter, evt) {
 
 EventEmitter.prototype.on = function (evt, fn) {
 	if (typeof fn !== 'function') {
-		console.warn('Tried to register non-function', fn, 'as event handler for event:', evt);
-		return this;
+		throw new TypeError('Tried to register non-function as event handler for event: ' + evt);
 	}
 
 	this.emit('newListener', evt, fn);
