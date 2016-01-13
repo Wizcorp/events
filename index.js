@@ -88,8 +88,6 @@ EventEmitter.prototype.listeners = function (evt) {
 	return [];
 };
 
-var slice = Array.prototype.slice;
-
 EventEmitter.prototype.emit = function (evt) {
 	var handlers = this._events[evt];
 	if (handlers === undefined) {
@@ -100,7 +98,13 @@ EventEmitter.prototype.emit = function (evt) {
 	handlers = handlers.slice();
 
 	var hadListener = false;
-	var args = slice.call(arguments, 1);
+
+	// copy all arguments, but skip the first (the event name)
+	var args = [];
+	for (var i = 1; i < arguments.length; i++) {
+		args.push(arguments[i]);
+	}
+
 	for (var i = 0, len = handlers.length; i < len; i++) {
 		var handler = handlers[i];
 
