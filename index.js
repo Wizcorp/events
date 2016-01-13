@@ -1,13 +1,14 @@
-
-var EventEmitter = function () {
-	this.eventHandlers = {};
+function EventEmitter() {
+	this._events = {};
 };
+
 EventEmitter.EventEmitter = EventEmitter;
+
 module.exports = EventEmitter;
 
 EventEmitter.listenerCount = function (emitter, evt) {
-	var eventHandlers = emitter.eventHandlers[evt];
-	return eventHandlers ? eventHandlers.length : 0;
+	var handlers = emitter._events[evt];
+	return handlers ? handlers.length : 0;
 };
 
 EventEmitter.prototype.on = function (evt, fn) {
@@ -18,7 +19,7 @@ EventEmitter.prototype.on = function (evt, fn) {
 
 	this.emit('newListener', evt, fn);
 
-	var allHandlers = this.eventHandlers;
+	var allHandlers = this._events;
 	var evtHandlers = allHandlers[evt];
 	if (evtHandlers === undefined) {
 		// first event handler for this event type
@@ -49,14 +50,14 @@ EventEmitter.prototype.setMaxListeners = function () {
 EventEmitter.prototype.removeListener = function (evt, handler) {
 	// like node.js, we only remove a single listener at a time, even if it occurs multiple times
 
-	var handlers = this.eventHandlers[evt];
+	var handlers = this._events[evt];
 	if (handlers !== undefined) {
 		var index = handlers.indexOf(handler);
 		if (index !== -1) {
 			handlers.splice(index, 1);
 			this.emit('removeListener', evt, handler);
 			if (handlers.length === 0) {
-				delete this.eventHandlers[evt];
+				delete this._events[evt];
 			}
 		}
 	}
@@ -65,19 +66,19 @@ EventEmitter.prototype.removeListener = function (evt, handler) {
 
 EventEmitter.prototype.removeAllListeners = function (evt) {
 	if (evt) {
-		delete this.eventHandlers[evt];
+		delete this._events[evt];
 	} else {
-		this.eventHandlers = {};
+		this._events = {};
 	}
 	return this;
 };
 
 EventEmitter.prototype.hasListeners = function (evt) {
-	return (this.eventHandlers[evt] !== undefined);
+	return this._events[evt] !== undefined;
 };
 
 EventEmitter.prototype.listeners = function (evt) {
-	var handlers = this.eventHandlers[evt];
+	var handlers = this._events[evt];
 	if (handlers !== undefined) {
 		return handlers.slice();
 	}
@@ -86,9 +87,9 @@ EventEmitter.prototype.listeners = function (evt) {
 };
 
 var slice = Array.prototype.slice;
-EventEmitter.prototype.emit = function (evt) {
 
-	var handlers = this.eventHandlers[evt];
+EventEmitter.prototype.emit = function (evt) {
+	var handlers = this._events[evt];
 	if (handlers === undefined) {
 		return false;
 	}
