@@ -16,6 +16,7 @@ EventEmitter.prototype.on = function (evt, fn) {
 		throw new TypeError('Tried to register non-function as event handler for event: ' + evt);
 	}
 
+	// we emit first, because if evt is "newListener" it would go recursive
 	this.emit('newListener', evt, fn);
 
 	var allHandlers = this._events;
@@ -23,10 +24,10 @@ EventEmitter.prototype.on = function (evt, fn) {
 	if (evtHandlers === undefined) {
 		// first event handler for this event type
 		allHandlers[evt] = [fn];
-		return this;
+	} else {
+		evtHandlers.push(fn);
 	}
 
-	evtHandlers.push(fn);
 	return this;
 };
 
@@ -54,10 +55,12 @@ EventEmitter.prototype.removeListener = function (evt, handler) {
 		var index = handlers.indexOf(handler);
 		if (index !== -1) {
 			handlers.splice(index, 1);
-			this.emit('removeListener', evt, handler);
+
 			if (handlers.length === 0) {
 				delete this._events[evt];
 			}
+
+			this.emit('removeListener', evt, handler);
 		}
 	}
 	return this;
