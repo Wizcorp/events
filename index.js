@@ -101,9 +101,6 @@ EventEmitter.prototype.emit = function (evt) {
 	var args = slice.call(arguments, 1);
 	for (var i = 0, len = handlers.length; i < len; i++) {
 		var handler = handlers[i];
-		if (handler === undefined) {
-			continue;
-		}
 
 		handler.apply(this, args);
 		hadListener = true;
