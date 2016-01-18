@@ -1,10 +1,10 @@
 {
   "name": "events.js",
   "version": "0.1.4",
-  "description": "Event Emitter component, compatible with nodejs Event Emitter",
+  "description": "Event Emitter component, compatible with Node.js Event Emitter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +21,9 @@
   "bugs": {
     "url": "https://github.com/wizcorp/events/issues"
   },
-  "homepage": "https://github.com/wizcorp/events#readme"
+  "homepage": "https://github.com/wizcorp/events#readme",
+  "devDependencies": {
+    "pre-commit": "^1.1.2",
+    "tape": "^4.4.0"
+  }
 }
