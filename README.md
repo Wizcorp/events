@@ -1,6 +1,6 @@
 # Wizcorp/events
 
-API compatible port of Node.js' EventEmitter to the browser via Component.
+API compatible port of Node.js' EventEmitter for the browser via Component.
 
 ## Installation
 

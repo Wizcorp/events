@@ -133,5 +133,18 @@ test('Race condition tests', function (t) {
 	t.equal(emitted.new, 1);
 
 	t.end();
+});
 
+test('Arguments', function (t) {
+	const emitter = new EE();
+
+	function fooListener(a, b, c) {
+		t.equal(a, 'hello');
+		t.equal(b, 'world');
+		t.equal(c, undefined);
+		t.end();
+	}
+
+	emitter.on('foo', fooListener);
+	emitter.emit('foo', 'hello', 'world');
 });
