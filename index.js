@@ -1,6 +1,6 @@
 function EventEmitter() {
 	this._events = {};
-};
+}
 
 EventEmitter.EventEmitter = EventEmitter;
 
