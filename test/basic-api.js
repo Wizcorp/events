@@ -24,9 +24,57 @@ test('Basic API', function (t) {
 
 	t.equal(emitted, 4);
 
+	t.throws(function () {
+		emitter.on('foo', 'foo');
+	});
+
 	t.end();
 });
 
+test('Unsupported setMaxListeners', function (t) {
+	const emitter = new EE();
+	let logged = 0;
+
+	var oldFn = console.warn;
+
+	console.warn = function () {
+		logged += 1;
+	};
+
+	emitter.setMaxListeners(2);
+	emitter.setMaxListeners(3);
+
+	t.equal(logged, 1);
+
+	console.warn = oldFn;
+
+	t.end();
+});
+
+test('Remove all listeners', function (t) {
+	const emitter = new EE();
+	function foo() {}
+
+	emitter.on('foo', foo);
+	emitter.on('foo', foo);
+	emitter.on('foo', foo);
+
+	t.deepEqual(emitter.listeners('foo'), [foo, foo, foo]);
+
+	emitter.removeAllListeners('foo');
+
+	t.deepEqual(emitter.listeners('foo'), []);
+
+	emitter.on('foo', foo);
+	emitter.on('foo', foo);
+	emitter.on('foo', foo);
+
+	emitter.removeAllListeners();
+
+	t.deepEqual(emitter.listeners('foo'), []);
+
+	t.end();
+});
 
 test('new/remove Listener', function (t) {
 	const emitter = new EE();
@@ -48,14 +96,19 @@ test('new/remove Listener', function (t) {
 		emitted.foo += 1;
 	}
 
+	function noop() {}
+
 	emitter.on('newListener', newListener);
 	emitter.on('removeListener', removeListener);
 
+	emitter.on('foo', noop);
 	emitter.on('foo', fooListener);
 	emitter.once('foo', fooListener);
 	emitter.once('foo', fooListener);
 
-	t.equal(emitter.listeners('foo').length, 3);
+	t.equal(EE.listenerCount(emitter, 'foo'), 4);
+
+	t.equal(emitter.listeners('foo').length, 4);
 	t.equal(emitter.listeners('newListener').length, 1);
 	t.equal(emitter.listeners('removeListener').length, 1);
 	t.equal(emitter.hasListeners('foo'), true);
@@ -64,27 +117,28 @@ test('new/remove Listener', function (t) {
 	emitter.emit('foo');
 
 	t.equal(emitted.foo, 3);
-	t.equal(emitted.new, 4);
+	t.equal(emitted.new, 5);
 	t.equal(emitted.remove, 2);
 
 	emitter.emit('foo');
 
 	t.equal(emitted.foo, 4);
-	t.equal(emitted.new, 4);
+	t.equal(emitted.new, 5);
 	t.equal(emitted.remove, 2);
 
 	emitter.removeListener('foo', fooListener);
+	emitter.removeListener('foo', noop);
 
 	t.equal(emitter.hasListeners('foo'), false);
 	t.equal(emitted.foo, 4);
-	t.equal(emitted.new, 4);
-	t.equal(emitted.remove, 3);
+	t.equal(emitted.new, 5);
+	t.equal(emitted.remove, 4);
 
 	emitter.emit('foo');
 
 	t.equal(emitted.foo, 4);
-	t.equal(emitted.new, 4);
-	t.equal(emitted.remove, 3);
+	t.equal(emitted.new, 5);
+	t.equal(emitted.remove, 4);
 
 	t.end();
 });
