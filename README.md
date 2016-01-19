@@ -4,8 +4,8 @@ API compatible port of Node.js' EventEmitter for the browser.
 
 ## Installation
 
-**`component`:** `$ component install Wizcorp/events`
-**`npm`:** `$ npm install events.js`
+- **`component`**: `$ component install Wizcorp/events`
+- **`npm`**: `$ npm install events.js`
 
 ## API when using Browserify, Webpack, etc:
 
